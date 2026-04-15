@@ -16,9 +16,11 @@
         }
         #cart-modal { display: none; }
         #cart-modal.active { display: flex; }
-        /* Smooth Hover for Buttons */
         .btn-animate { transition: transform 0.3s ease; }
         .btn-animate:hover { transform: scale(1.05); }
+        /* Image hover effect */
+        .product-img { transition: transform 0.5s ease; }
+        .group:hover .product-img { transform: scale(1.1); }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans overflow-x-hidden">
@@ -166,32 +168,27 @@
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // Initialize Animations
-        AOS.init({
-            duration: 800,
-            once: true,
-            offset: 100
-        });
+        AOS.init({ duration: 800, once: true, offset: 100 });
 
         const products = [
-            { name: "WiFi Camera", price: 4500, stock: 10 },
-            { name: "Analog Camera", price: 2200, stock: 15 },
-            { name: "IP Camera", price: 5500, stock: 5 },
-            { name: "Camera Door Bell", price: 8500, stock: 3 },
-            { name: "DVR (4 Channel)", price: 9500, stock: 8 },
-            { name: "NVR (4 Channel)", price: 12000, stock: 4 },
-            { name: "2MP Camera", price: 2800, stock: 20 },
-            { name: "5MP Camera", price: 4200, stock: 12 },
-            { name: "3MP Camera", price: 3200, stock: 10 },
-            { name: "4MP Camera", price: 3800, stock: 10 },
-            { name: "Hard Disk 500GB", price: 2500, stock: 15 },
-            { name: "POE Switch", price: 4500, stock: 6 },
-            { name: "Tenda WiFi Router", price: 3500, stock: 9 },
-            { name: "Wire Roll", price: 15000, stock: 10 },
-            { name: "Biometric Machine", price: 18000, stock: 2 },
-            { name: "Wireless Mouse", price: 850, stock: 25 },
-            { name: "PTZ Camera", price: 12500, stock: 4 },
-            { name: "Hidden Camera", price: 5500, stock: 7 }
+            { name: "WiFi Camera", price: 4500, stock: 10, img: "https://images.unsplash.com/photo-1557315360-6a350ab4eccd?auto=format&fit=crop&w=300&q=80" },
+            { name: "Analog Camera", price: 2200, stock: 15, img: "https://images.unsplash.com/photo-1528319725582-ddc0b6a2ec4c?auto=format&fit=crop&w=300&q=80" },
+            { name: "IP Camera", price: 5500, stock: 5, img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=300&q=80" },
+            { name: "Camera Door Bell", price: 8500, stock: 3, img: "https://images.unsplash.com/photo-1558002038-103792e09a34?auto=format&fit=crop&w=300&q=80" },
+            { name: "DVR (4 Channel)", price: 9500, stock: 8, img: "https://images.unsplash.com/photo-1591405351990-4726e331f141?auto=format&fit=crop&w=300&q=80" },
+            { name: "NVR (4 Channel)", price: 12000, stock: 4, img: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=300&q=80" },
+            { name: "2MP Camera", price: 2800, stock: 20, img: "https://images.unsplash.com/photo-1557315360-6a350ab4eccd?auto=format&fit=crop&w=300&q=80" },
+            { name: "5MP Camera", price: 4200, stock: 12, img: "https://images.unsplash.com/photo-1528319725582-ddc0b6a2ec4c?auto=format&fit=crop&w=300&q=80" },
+            { name: "3MP Camera", price: 3200, stock: 10, img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=300&q=80" },
+            { name: "4MP Camera", price: 3800, stock: 10, img: "https://images.unsplash.com/photo-1558002038-103792e09a34?auto=format&fit=crop&w=300&q=80" },
+            { name: "Hard Disk 500GB", price: 2500, stock: 15, img: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=300&q=80" },
+            { name: "POE Switch", price: 4500, stock: 6, img: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=300&q=80" },
+            { name: "Tenda WiFi Router", price: 3500, stock: 9, img: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=300&q=80" },
+            { name: "Wire Roll", price: 15000, stock: 10, img: "https://images.unsplash.com/photo-1558494949-ef010cbdcc51?auto=format&fit=crop&w=300&q=80" },
+            { name: "Biometric Machine", price: 18000, stock: 2, img: "https://images.unsplash.com/photo-1620121692029-d088224ddc74?auto=format&fit=crop&w=300&q=80" },
+            { name: "Wireless Mouse", price: 850, stock: 25, img: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&w=300&q=80" },
+            { name: "PTZ Camera", price: 12500, stock: 4, img: "https://images.unsplash.com/photo-1557315360-6a350ab4eccd?auto=format&fit=crop&w=300&q=80" },
+            { name: "Hidden Camera", price: 5500, stock: 7, img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=300&q=80" }
         ];
 
         let cart = JSON.parse(localStorage.getItem('itworks_cart_v3')) || [];
@@ -203,18 +200,23 @@
                 const availableStock = p.stock - (inCart ? inCart.qty : 0);
                 
                 return `
-                <div class="bg-white border rounded-2xl p-5 shadow-sm hover:border-yellow-500 transition-all group text-center" 
+                <div class="bg-white border rounded-2xl overflow-hidden shadow-sm hover:border-yellow-500 transition-all group text-center" 
                      data-aos="fade-up" data-aos-delay="${(index % 4) * 50}">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="bg-green-50 text-green-700 font-bold px-2 py-1 rounded text-[10px]">Rs. ${p.price}</span>
-                        <span class="text-xs font-medium text-gray-500">Stock: ${availableStock}</span>
+                    <div class="h-40 overflow-hidden bg-gray-100">
+                        <img src="${p.img}" alt="${p.name}" class="w-full h-full object-cover product-img">
                     </div>
-                    <h5 class="font-bold text-slate-800 mb-4 h-10 overflow-hidden text-sm">${p.name}</h5>
-                    <button onclick="addToCart('${p.name}', ${p.price})" 
-                        ${availableStock <= 0 ? 'disabled' : ''}
-                        class="w-full py-2 ${availableStock <= 0 ? 'bg-gray-300' : 'bg-slate-900 hover:bg-yellow-500 hover:text-slate-900'} text-white rounded-lg transition font-bold text-xs btn-animate">
-                        ${availableStock <= 0 ? 'Out of Stock' : 'Add to Bill'}
-                    </button>
+                    <div class="p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="bg-green-50 text-green-700 font-bold px-2 py-1 rounded text-[10px]">Rs. ${p.price}</span>
+                            <span class="text-xs font-medium text-gray-500">Stock: ${availableStock}</span>
+                        </div>
+                        <h5 class="font-bold text-slate-800 mb-4 h-10 overflow-hidden text-sm leading-tight">${p.name}</h5>
+                        <button onclick="addToCart('${p.name}', ${p.price})" 
+                            ${availableStock <= 0 ? 'disabled' : ''}
+                            class="w-full py-2 ${availableStock <= 0 ? 'bg-gray-300' : 'bg-slate-900 hover:bg-yellow-500 hover:text-slate-900'} text-white rounded-lg transition font-bold text-xs btn-animate">
+                            ${availableStock <= 0 ? 'Out of Stock' : 'Add to Bill'}
+                        </button>
+                    </div>
                 </div>
             `}).join('');
         }
@@ -222,7 +224,6 @@
         function addToCart(name, price) {
             const product = products.find(p => p.name === name);
             const existingItem = cart.find(item => item.name === name);
-            
             if (existingItem) {
                 if (existingItem.qty < product.stock) {
                     existingItem.qty += 1;
@@ -239,16 +240,12 @@
         function updateQuantity(index, delta) {
             const item = cart[index];
             const product = products.find(p => p.name === item.name);
-
             if (delta > 0 && item.qty >= product.stock) {
                 alert("Stock ki had khatam hai!");
                 return;
             }
-
             item.qty += delta;
-            if (item.qty <= 0) {
-                cart.splice(index, 1);
-            }
+            if (item.qty <= 0) cart.splice(index, 1);
             updateCart();
             displayProducts();
         }
@@ -308,11 +305,4 @@
             });
             message += "--------------------------\n";
             message += `*TOTAL BILL: Rs. ${total}*`;
-            window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
-        }
-
-        displayProducts();
-        updateCart();
-    </script>
-</body>
-</html>
+            window.open(`https://wa.me/${phoneNumber}?text=${encodeUR
